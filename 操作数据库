@@ -1,0 +1,65 @@
+# 调用脚本
+from script import data_1
+
+name = input("库位标识")
+data_1()
+
+# 脚本
+import pymysql
+from DB_Date import name
+
+# 连接数据库导入参数d
+# class db_do(a, b, a1, b1):
+
+def db_do(a, b, a1, b1):
+    db = pymysql.connect(
+        host="localhost",
+        port=3306,
+        user="root",
+        password="root123",
+        database="stady"
+    )
+
+    cursor = db.cursor()
+    sql = (
+            "INSERT INTO `stady`.`g_warehouse_location`(`warehouse_location_code`, `row_num`, `column_num`, `against_wall`) " \
+            f"VALUES ('{name}%s-%s', %s, %s, 2) " % (a, b, a1, b1))
+    try:
+        cursor.execute(sql)
+        db.commit()
+    except Exception as e:
+        print("添加失败", e)
+    else:
+        print("创建成功")
+    cursor.execute(sql)
+    cursor.close()
+    db.close()
+
+
+# 定义参数变量
+def data(a, b):
+    code = name
+    math1 = "%02d" % a
+    math2 = "%02d" % b
+    return code, math1, math2
+
+
+# 操作参数
+def data_1():
+    a1 = int(input(f"请输入{name}后最大的数字"))
+    b1 = int(input("请输入-后最大的数字"))
+    a = 1
+    b = 1
+    for i in range(1, a1 * b1):
+        if b < b1:
+            ee = data(a, b)
+            db_do(ee[1], ee[2], a1, b1)
+            b += 1
+
+        if b == b1:
+            ee = data(a, b)
+            db_do(ee[1], ee[2], a1, b1)
+            a += 1
+            b = 1
+            if a > a1:
+                break
